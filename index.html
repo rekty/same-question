@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Same Question — ask six labs one question</title>
+<meta name="description" content="Ask the same question to models from different labs at once, see every answer side by side, and find the exact point where they disagree. Pollinations, paid with your own Pollen." />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="./">Same Question</a>
+  <p class="tag">One question. Six labs. Every answer side by side.</p>
+  <button id="pollen-pill" class="pill" type="button">Connect Pollen</button>
+</header>
+
+<main>
+  <section class="ask">
+    <label for="question" class="eyebrow">The question</label>
+    <textarea id="question" rows="2" placeholder="Is a hot dog a sandwich?"
+      maxlength="400">Is a hot dog a sandwich?</textarea>
+    <div class="row">
+      <div id="presets" class="chips" aria-label="Example questions"></div>
+    </div>
+    <div class="row split">
+      <div class="models" id="models"></div>
+      <button id="run" class="go" type="button">Ask all <span id="run-count">6</span></button>
+    </div>
+    <p class="hint" id="hint">Each answer is one chat completion on your own Pollen. Six small answers usually cost well under 1 Pollen.</p>
+  </section>
+
+  <section id="answers" class="answers" aria-live="polite"></section>
+
+  <section id="split" class="split-panel" hidden>
+    <div class="split-head">
+      <h2>Where they split</h2>
+      <button id="judge" class="ghost" type="button">Name the camps (1 call)</button>
+    </div>
+    <div id="camps" class="camps"></div>
+    <p class="hint" id="split-hint"></p>
+  </section>
+
+  <section class="about">
+    <h2>Why this exists</h2>
+    <p>Pollinations serves text, image and audio models from many labs through one key. Asking two
+      labs the same question is cheap; asking six at once and reading the answers next to each other
+      is the only way to see which parts of an answer are the question's fault and which are the
+      model's. Nothing is cached, hidden or aggregated into a single "consensus" number: the answers
+      stay separate, and the split panel only groups what already sits on the screen.</p>
+    <p>Every call spends the reader's own Pollen through
+      <a href="https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md" rel="noopener">Bring your own Pollen</a>.
+      No key is sent anywhere except <code>gen.pollinations.ai</code>, and it stays in this tab's session storage.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <a href="https://pollinations.ai/?ref=badge" rel="noopener">
+    <img src="https://raw.githubusercontent.com/pollinations/pollinations/main/packages/ui/src/brand/badge-made-with.svg" alt="Made with pollinations.ai" height="28" />
+  </a>
+  <button id="share" class="ghost" type="button">Copy link to this question</button>
+</footer>
+
+<dialog id="connect">
+  <h2>Connect your Pollen</h2>
+  <p class="hint">Sign in once; the token stays in this tab. Nothing is stored on a server.</p>
+  <button id="device" class="go" type="button">Sign in with a code</button>
+  <p id="device-code" class="code" hidden></p>
+  <details>
+    <summary>Or paste an sk_ key</summary>
+    <div class="row">
+      <input id="sk" type="password" placeholder="sk_…" autocomplete="off" />
+      <button id="use-sk" class="ghost" type="button">Use key</button>
+    </div>
+  </details>
+  <p id="connect-msg" class="hint"></p>
+  <button id="close-connect" class="ghost wide" type="button">Close</button>
+</dialog>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
