@@ -5,13 +5,16 @@ const SYSTEM =
   "Answer the user's question directly in at most 90 words. No preamble, no restating the " +
   "question, no list of caveats. Commit to a position when the question asks for one.";
 
+// Every chip is selected when the page loads, so every entry has to be free
+// (`paid_only: false` on GET /models). A paid one would 402 on the first run for a
+// visitor on free Pollen and leave the answer grid half empty.
 const DEFAULT_MODELS = [
   ["openai/gpt-5.4-nano", "OpenAI"],
-  ["anthropic/claude-haiku-5.5", "Anthropic"],
-  ["google/gemini-4-argon", "Google"],
-  ["meta/muse-wonder-1.0", "Meta"],
-  ["deepseek/deepseek-v4.1-flash-1017", "DeepSeek"],
-  ["stepfun/step-5-preview", "StepFun"],
+  ["meta/muse-spark-open", "Meta"],
+  ["deepseek/deepseek-v4.1-flash", "DeepSeek"],
+  ["mistralai/mistral-large-3", "Mistral"],
+  ["x-ai/grok-4.6", "xAI"],
+  ["nvidia/nemotron-3.5-lightning", "NVIDIA"],
 ];
 
 const PRESETS = [
