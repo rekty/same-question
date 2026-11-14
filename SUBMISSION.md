@@ -28,8 +28,9 @@ Static site only: index.html, app.js, style.css, shared/*.js. No backend, no
 server-side secret, no database.
 
 - Six labs, one prompt. DEFAULT_MODELS in app.js maps one model per lab:
-  openai/gpt-5.4-nano, anthropic/claude-haiku-5.5, google/gemini-4-argon,
-  meta/muse-wonder-1.0, deepseek/deepseek-v4.1-flash-1017, stepfun/step-5-preview.
+  openai/gpt-5.4-nano, meta/muse-spark-open, deepseek/deepseek-v4.1-flash,
+  mistralai/mistral-large-3, x-ai/grok-4.6, nvidia/nemotron-3.5-lightning — all free
+  according to GET /models, so every chip runs on free Pollen.
   Any two to six can be toggled.
 - Calls. Each card is one browser POST to
   https://gen.pollinations.ai/v1/chat/completions with a shared 90-word system
