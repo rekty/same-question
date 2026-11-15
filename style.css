@@ -12,6 +12,10 @@
 
 * { box-sizing: border-box; }
 
+/* classes below set display (inline-block on .ghost), which would otherwise win
+   over the browser rule for [hidden] and leave a "hidden" button on screen */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   background: radial-gradient(1200px 500px at 20% -10%, #23213a 0%, var(--bg) 60%);
