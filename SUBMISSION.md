@@ -10,7 +10,7 @@ The title becomes `[App Submission] Same Question` automatically.
 | **App Description** | `Ask OpenAI, Meta, DeepSeek, Mistral, xAI and NVIDIA the same question, then read all six answers side by side with each one's latency and real Pollen cost.` |
 | **App URL** | `https://rekty.github.io/same-question/` |
 | **GitHub Repository URL** | `https://github.com/rekty/same-question` |
-| **Screenshot** | `assets/screenshot.png` (1920×1040, real run) |
+| **Screenshot** | `assets/screenshot.png` (1920×1080, real run) |
 | **App Category** | `chat` |
 | **Platform** | `web` |
 | **App Language** | `en` |
@@ -36,6 +36,10 @@ server-side secret, no database.
 - Calls. Each card is one browser POST to
   https://gen.pollinations.ai/v1/chat/completions with a shared 90-word system
   prompt. There is no cache and no merged "consensus" answer.
+- Blind vote. Answers are shuffled and labelled A-F with the lab, latency and cost
+  withheld; the reader picks one, every card is then unblinded and marked, and a
+  local tally (localStorage, no server, no account) shows how their blind votes
+  have fallen. Nothing about the vote is sent to Pollinations.
 - Payment. Every request carries the reader's own sk_ key (Bring your own
   Pollen). The key is kept in this tab's sessionStorage and sent only to
   gen.pollinations.ai; the owner never pays for a reader's run.
