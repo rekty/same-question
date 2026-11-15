@@ -7,7 +7,7 @@ The title becomes `[App Submission] Same Question` automatically.
 | Field | Value |
 |---|---|
 | **App Name** | `Same Question` |
-| **App Description** | `Ask OpenAI, Anthropic, Google, Meta, DeepSeek and StepFun the same question, then read all six answers side by side with each one's latency and real Pollen cost.` |
+| **App Description** | `Ask OpenAI, Meta, DeepSeek, Mistral, xAI and NVIDIA the same question, then read all six answers side by side with each one's latency and real Pollen cost.` |
 | **App URL** | `https://rekty.github.io/same-question/` |
 | **GitHub Repository URL** | `https://github.com/rekty/same-question` |
 | **Screenshot** | `assets/screenshot.png` (1920×1040, real run) |
@@ -17,7 +17,8 @@ The title becomes `[App Submission] Same Question` automatically.
 | **Discord Username** | *(optional — leave empty)* |
 | **Quest** | `#19183` |
 
-Description length: 154 characters (limit is 200).
+Description length: 153 characters (limit is 200). All six models re-checked on 2026-11-15:
+`paid_only: false`, health `healthy`, still listed by `GET /models?type=text`.
 
 ## Pollinations integration (evidence)
 

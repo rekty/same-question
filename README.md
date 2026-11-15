@@ -14,8 +14,9 @@ tell which parts of an answer come from the question and which come from the mod
 
 ## What the app does
 
-- **Six labs, one click.** OpenAI, Anthropic, Google, Meta, DeepSeek and StepFun answer the same
-  prompt in parallel. Any two to six can be toggled; the question is sent verbatim with one shared
+- **Six labs, one click.** OpenAI, Meta, DeepSeek, Mistral, xAI and NVIDIA answer the same
+  prompt in parallel. All six are free models (`paid_only: false` on `GET /models`, health
+  `healthy` when last checked on 2026-11-15), so a visitor on free Pollen still gets six answers. Any two to six can be toggled; the question is sent verbatim with one shared
   system prompt that caps the answer at 90 words.
 - **Every answer stands alone.** Each card keeps its own text, latency and the Pollen it actually
   cost, computed from the token usage the API returns and the per-token prices in
