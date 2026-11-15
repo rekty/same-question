@@ -230,6 +230,9 @@ function writeVotes(store) {
 function showBlind() {
   const panel = $("blind");
   panel.hidden = false;
+  $("blind-hint").hidden = false;
+  $("skip-vote").hidden = false;
+  panel.querySelector("h2").textContent = "Blind vote";
   $("blind-hint").textContent =
     "The answers below are shuffled and labelled A–F. Pick the one you think is best; the lab names, latency and cost stay hidden until you vote.";
   for (const [id, node] of state.nodes) {
@@ -254,7 +257,11 @@ function castVote(model) {
 // Unhides every card. `voted` decides whether one of them is marked as the pick
 // and whether the tally line reads as a fresh count or as history.
 function reveal({ voted }) {
-  $("blind").hidden = true;
+  // The panel stays: after the reveal it holds the tally, so the skip button and
+  // the "pick one" instruction go away instead of the whole panel.
+  $("blind").hidden = false;
+  $("blind-hint").hidden = true;
+  $("skip-vote").hidden = true;
   for (const [id, node] of state.nodes) {
     node.querySelector(".vote")?.remove();
     node.querySelector(".who").textContent = shortName(id);
