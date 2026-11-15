@@ -6,6 +6,11 @@ import { shuffle, letter, tally, mergeVote, votesFrom } from "./shared/blind.js"
 // across readers, and the hint says so.
 const VOTE_KEY = "sameq.votes";
 
+// A provider error can name the model ("model openai/gpt-5.4-nano ..."), which
+// would unmask the card while the blind vote is still open. Show this until the
+// reveal, then swap the real message back in.
+const BLIND_FAIL = "This answer failed before it arrived. The lab and the error stay hidden until you vote.";
+
 const SYSTEM =
   "Answer the user's question directly in at most 90 words. No preamble, no restating the " +
   "question, no list of caveats. Commit to a position when the question asks for one.";
@@ -192,7 +197,7 @@ async function run() {
         return true;
       } catch (error) {
         state.answers[i] = { model: id, ok: false, error: error.message };
-        setCardState(nodes[i], "failed", error.message);
+        setCardState(nodes[i], "failed", BLIND_FAIL);
         return false;
       }
     }),
@@ -205,7 +210,7 @@ async function run() {
     $("hint").textContent = "No model answered. Check the connection and try again.";
     return;
   }
-  $("hint").textContent = `${ok} of ${chosen.length} answered.`;
+  $("hint").textContent = ok === chosen.length ? `${ok} of ${chosen.length} answered.` : `${ok} of ${chosen.length} answered; the rest failed.`;
   state.pending = localCamps();
   if (ok >= 2) showBlind();
   else reveal({ voted: false });
@@ -268,6 +273,8 @@ function reveal({ voted }) {
     const answer = state.answers.find((a) => a && a.model === id);
     if (answer && answer.ok) {
       node.querySelector(".meta").textContent = `${(answer.ms / 1000).toFixed(1)}s · ${fmtPollen(pollenCost(id, answer.usage))}`;
+    } else if (answer && !answer.ok) {
+      node.querySelector(".text").textContent = answer.error;
     }
     if (voted) {
       node.classList.toggle("picked", id === state.picked);
