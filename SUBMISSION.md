@@ -57,7 +57,14 @@ server-side secret, no database.
 
 - `https://rekty.github.io/same-question/` returns HTTP 200 and renders the
   question box, six lab toggles, "Ask all 6" and the credit footer.
-- A real run on 2026-11-12 answered 6/6 models and reported per-answer cost.
+- Real run on **2026-11-15** through the device flow (App Key
+  `pk_TRM5Aq2QwxGsVj12`, Text only): 6/6 answered — OpenAI 0.6s · 0.07 mPollen,
+  Meta 6.8s · 3.38 mPollen, DeepSeek 7.5s · 0.19 mPollen, Mistral 6.2s · 0.11
+  mPollen, xAI 18.3s · 0.24 mPollen, NVIDIA 7.2s · 0.13 mPollen. Total under
+  0.005 Pollen.
+- Camp naming on the same run: 3 answers "not sandwich", 2 "yes sandwich",
+  1 "commonly sandwich" — one judge call, labels only.
+- `assets/screenshot.png` is that run, captured 2026-11-15 at 1920×1080.
 - `node --test` in the repository: 7 pass, 0 fail.
 
 ## Checklist
