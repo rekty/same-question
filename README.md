@@ -21,6 +21,10 @@ tell which parts of an answer come from the question and which come from the mod
 - **Every answer stands alone.** Each card keeps its own text, latency and the Pollen it actually
   cost, computed from the token usage the API returns and the per-token prices in
   `GET /models`. Nothing is merged into a fake consensus.
+- **Blind vote first.** The answers are shuffled and labelled A–F, with no lab name, latency or cost
+  on screen. You pick the answer you rate; only then are all six unblinded, the pick is marked, and a
+  tally of the blind votes you have cast in this browser is shown. The tally lives in `localStorage`
+  — there is no account, no server, and no one else's votes are mixed in.
 - **Where they split.** A local grouping pass compares the answers by shared vocabulary (Jaccard
   over content words, union-find at a fixed threshold), so the camps cost nothing and are
   reproducible from the text alone.
@@ -42,11 +46,12 @@ one.
 ## Tests
 
 ```bash
-node --test        # 7 tests over the grouping maths
+node --test        # 13 tests over the grouping maths and the blind-vote tally
 ```
 
-The tested module, `shared/agree.js`, is pure: tokenising, Jaccard similarity, union-find grouping,
-the shape-of-the-result line, and mapping judge labels back onto answers. UI wiring is not covered
+The tested modules, `shared/agree.js` and `shared/blind.js`, are pure: tokenising, Jaccard similarity,
+union-find grouping, the shape-of-the-result line, mapping judge labels back onto answers, the
+shuffle, the A–F letters and the vote tally. UI wiring is not covered
 by tests; the app was exercised against the live API with a real device-flow session.
 
 ## Run locally
@@ -56,4 +61,5 @@ python -m http.server 8091   # any static server; no build step
 ```
 
 Files: `index.html`, `style.css`, `app.js`, `shared/pollen.js` (device flow + one chat call),
-`shared/agree.js` (grouping), `test/agree.test.mjs`.
+`shared/agree.js` (grouping), `shared/blind.js` (shuffle, letters, vote tally),
+`test/agree.test.mjs`, `test/blind.test.mjs`.

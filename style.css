@@ -177,6 +177,23 @@ textarea:focus, input:focus { outline: 2px solid var(--accent); outline-offset: 
 .text { margin: 0; white-space: pre-wrap; }
 .card[data-status="asking…"] .text { color: var(--dim); }
 
+.blind {
+  margin-top: 20px;
+  border-color: rgba(39, 212, 205, 0.35);
+}
+
+.card .vote { margin-top: auto; align-self: flex-start; }
+.card.picked { border-color: var(--teal); box-shadow: inset 0 0 0 1px var(--teal); }
+.card.picked .who::after { content: " · your pick"; color: var(--teal); font-weight: 500; font-size: 12px; }
+.card.unpicked { opacity: 0.74; }
+
+.tally { margin-top: 12px; display: grid; gap: 6px; }
+.tally-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.tally-row { display: grid; grid-template-columns: 92px 1fr 26px; gap: 8px; align-items: center; font-size: 12.5px; }
+.tally-name { color: var(--dim); }
+.tally-bar { display: block; height: 8px; border-radius: 999px; background-image: var(--grad); }
+.tally-count { text-align: right; color: var(--dim); }
+
 .split-panel {
   margin-top: 24px;
   background: var(--panel);

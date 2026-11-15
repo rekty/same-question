@@ -1,5 +1,10 @@
 import * as pollen from "./shared/pollen.js";
 import { group, verdict, campsFromLabels } from "./shared/agree.js";
+import { shuffle, letter, tally, mergeVote, votesFrom } from "./shared/blind.js";
+
+// Blind votes are kept in this browser only; there is no backend to tally them
+// across readers, and the hint says so.
+const VOTE_KEY = "sameq.votes";
 
 const SYSTEM =
   "Answer the user's question directly in at most 90 words. No preamble, no restating the " +
@@ -37,6 +42,10 @@ const state = {
   pricing: new Map(),
   answers: [],
   running: false,
+  letters: new Map(), // model id -> "A".."F", fixed for the run
+  nodes: new Map(), // model id -> card element
+  picked: null, // model id the reader voted for
+  pending: null, // camps computed at the end of a run, shown after the reveal
 };
 
 let pollTimer = null;
@@ -142,13 +151,22 @@ async function run() {
   state.running = true;
   $("run").disabled = true;
   $("split").hidden = true;
-  const chosen = DEFAULT_MODELS.filter(([id]) => state.selected.has(id));
+  // The grid order would otherwise give the labs away (OpenAI always first), so
+  // the cards are shuffled and only get a letter until the reader has voted.
+  const chosen = shuffle(DEFAULT_MODELS.filter(([id]) => state.selected.has(id)));
   const box = $("answers");
   box.replaceChildren();
   state.answers = [];
+  state.picked = null;
+  state.pending = null;
+  state.letters = new Map(chosen.map(([id], i) => [id, letter(i)]));
+  state.nodes = new Map();
+  $("blind").hidden = true;
+  $("tally").hidden = true;
 
-  const nodes = chosen.map(([id, label]) => {
-    const node = card(id, label);
+  const nodes = chosen.map(([id]) => {
+    const node = card(id, `Answer ${state.letters.get(id)}`);
+    state.nodes.set(id, node);
     box.append(node);
     return node;
   });
@@ -169,8 +187,8 @@ async function run() {
           }
         }
         state.answers[i] = { model: id, ok: true, text: result.text, ms: result.ms, usage: result.usage };
-        const node = nodes[i];
-        setCardState(node, `${(result.ms / 1000).toFixed(1)}s · ${fmtPollen(pollenCost(id, result.usage))}`, result.text);
+        // Latency and cost would also hint at the lab, so they wait for the reveal.
+        setCardState(nodes[i], "answered", result.text);
         return true;
       } catch (error) {
         state.answers[i] = { model: id, ok: false, error: error.message };
@@ -188,7 +206,98 @@ async function run() {
     return;
   }
   $("hint").textContent = `${ok} of ${chosen.length} answered.`;
-  showCamps(localCamps());
+  state.pending = localCamps();
+  if (ok >= 2) showBlind();
+  else reveal({ voted: false });
+}
+
+function readVotes() {
+  try {
+    return JSON.parse(localStorage.getItem(VOTE_KEY) || "{}") || {};
+  } catch {
+    return {};
+  }
+}
+
+function writeVotes(store) {
+  try {
+    localStorage.setItem(VOTE_KEY, JSON.stringify(store));
+  } catch {
+    /* private mode: the vote still counts for this run, just not next time */
+  }
+}
+
+function showBlind() {
+  const panel = $("blind");
+  panel.hidden = false;
+  $("blind-hint").textContent =
+    "The answers below are shuffled and labelled A–F. Pick the one you think is best; the lab names, latency and cost stay hidden until you vote.";
+  for (const [id, node] of state.nodes) {
+    if (node.dataset.status === "failed") continue;
+    if (node.querySelector(".vote")) continue;
+    const btn = el("button", "ghost vote", "Pick this answer");
+    btn.type = "button";
+    btn.dataset.model = id;
+    btn.addEventListener("click", () => castVote(id));
+    node.append(btn);
+  }
+  panel.scrollIntoView?.({ block: "nearest" });
+}
+
+function castVote(model) {
+  if (state.picked) return;
+  state.picked = model;
+  writeVotes(mergeVote(readVotes(), model));
+  reveal({ voted: true });
+}
+
+// Unhides every card. `voted` decides whether one of them is marked as the pick
+// and whether the tally line reads as a fresh count or as history.
+function reveal({ voted }) {
+  $("blind").hidden = true;
+  for (const [id, node] of state.nodes) {
+    node.querySelector(".vote")?.remove();
+    node.querySelector(".who").textContent = shortName(id);
+    const answer = state.answers.find((a) => a && a.model === id);
+    if (answer && answer.ok) {
+      node.querySelector(".meta").textContent = `${(answer.ms / 1000).toFixed(1)}s · ${fmtPollen(pollenCost(id, answer.usage))}`;
+    }
+    if (voted) {
+      node.classList.toggle("picked", id === state.picked);
+      node.classList.toggle("unpicked", id !== state.picked);
+    }
+  }
+  renderTally(voted);
+  if (state.pending) showCamps(state.pending);
+}
+
+function renderTally(voted) {
+  const box = $("tally");
+  const { rows, total } = tally(votesFrom(readVotes()));
+  box.replaceChildren();
+  box.hidden = false;
+  const head = el("div", "tally-head");
+  const title = voted && state.picked ? `Vote counted — ${shortName(state.picked)} gets the point` : "Your blind tally";
+  head.append(el("strong", null, title), el("span", "camp-size", `${total} vote${total === 1 ? "" : "s"}`));
+  box.append(head);
+  if (!rows.length) {
+    box.append(el("p", "hint", "No votes yet."));
+    return;
+  }
+  for (const row of rows) {
+    const line = el("div", "tally-row");
+    const bar = el("span", "tally-bar");
+    bar.style.width = `${Math.max(6, Math.round(row.share * 100))}%`;
+    line.append(el("span", "tally-name", shortName(row.model)), bar, el("span", "tally-count", String(row.count)));
+    box.append(line);
+  }
+  box.append(
+    el(
+      "p",
+      "hint",
+      "Every blind vote you have cast in this browser, across all questions. Nothing is uploaded and no one else's votes are mixed in.",
+    ),
+  );
 }
 
 function localCamps() {
@@ -372,6 +481,10 @@ function init() {
   loadPricing();
   $("run").addEventListener("click", run);
   $("judge").addEventListener("click", judge);
+  $("skip-vote").addEventListener("click", () => {
+    if ($("blind").hidden) return;
+    reveal({ voted: false });
+  });
   $("share").addEventListener("click", share);
   $("pollen-pill").addEventListener("click", () => openConnect());
   $("device").addEventListener("click", connectDevice);

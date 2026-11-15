@@ -29,6 +29,16 @@
     <p class="hint" id="hint">Each answer is one chat completion on your own Pollen. Six small answers usually cost well under 1 Pollen.</p>
   </section>
 
+  <section id="blind" class="split-panel blind" hidden>
+    <div class="split-head">
+      <h2>Blind vote</h2>
+      <button id="skip-vote" class="ghost" type="button">Show the labs without voting</button>
+    </div>
+    <p class="hint" id="blind-hint">The answers below are shuffled and labelled A–F. Pick the one you
+      think is best; the lab names, latency and cost stay hidden until you vote.</p>
+    <div id="tally" class="tally" hidden></div>
+  </section>
+
   <section id="answers" class="answers" aria-live="polite"></section>
 
   <section id="split" class="split-panel" hidden>
@@ -47,6 +57,10 @@
       is the only way to see which parts of an answer are the question's fault and which are the
       model's. Nothing is cached, hidden or aggregated into a single "consensus" number: the answers
       stay separate, and the split panel only groups what already sits on the screen.</p>
+    <p>Before any lab name appears, the answers are shuffled and labelled A–F so you can vote for the
+      one you actually rate. Your pick unblinds all six, and a tally of every blind vote you have
+      cast in this browser is shown with the camps. The votes are local: there is no account and no
+      server to send them to.</p>
     <p>Every call spends the reader's own Pollen through
       <a href="https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md" rel="noopener">Bring your own Pollen</a>.
       No key is sent anywhere except <code>gen.pollinations.ai</code>, and it stays in this tab's session storage.</p>
